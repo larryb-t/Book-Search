@@ -1,0 +1,14 @@
+<form method="post">
+  <input name="query" placeholder="Search books">
+  <button>Search</button>
+</form>
+
+{% for r in results %}
+  <p>
+    ID: {{ r.book_id }} <br>
+    Title: {{ r.display.get('title', '') }} <br>
+    Authors: {{ r.display.get('authors', '') }} <br>
+    Score: {{ "%.3f"|format(r.score) }}
+  </p>
+  <hr>
+{% endfor %}
