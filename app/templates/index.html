@@ -1,19 +1,34 @@
-<form method="POST">
-  <input name="query" placeholder="Search books">
 
-  <label for="genres">Preferred Genre:</label>
-  <input type="text" name="genres" placeholder="Fiction, Sci-Fi, History">
+
+<h2>Context-Aware Book Search and Recommendation System</h2>
+
+<form method="POST">
+  <label for="genres">Preferred Genres:</label>
+  <input
+    type="text"
+    name="genres"
+    value="{{ current_genres }}"
+    placeholder="History, Drama, Fiction..."
+  >
+
+  <br><br>
+
+  <label for="query">Search Books:</label>
+  <input name="query" placeholder="Search books">
 
   <button type="submit">Search</button>
 </form>
 
+{% if current_genres %}
+<p><b>Current Preferred Genres:</b> {{ current_genres }}</p>
+{% endif %}
 
 
 {% for r in results %}
   <p>
-    <b>{{ r.title }}</b> (ID: {{ r.book_id }})<br>
-    Authors: {{ r.authors }}<br>
-    Genres: {{ r.genres | join(', ') }}<br>
+    <b>{{ r.display.get('title', '') }}</b> (ID: {{ r.book_id }})<br>
+    Authors: {{ r.display.get('authors', '') }}<br>
+    Genres: {{ r.display.get('categories', '') }}<br>
     Score: {{ "%.3f"|format(r.score) }}
   </p>
   <hr>

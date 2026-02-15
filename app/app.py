@@ -3,6 +3,8 @@ from src.index import InvertedIndex
 from src.ingest import find_pg_catalog, load_pg_catalog
 from src.ingest.kaggle_books import find_books_csv, load_books_csv
 from src.rank import search
+from flask import session
+
 
 dataset_root = '.'
 
@@ -21,47 +23,37 @@ else:
 
 index = InvertedIndex.build(records)
 
-def personalize(results, preferred_genres):
-    boosted = []
-
-    preferred_genres = [g.strip().lower() for g in preferred_genres]
-    for r in results:
-        score = r.score
-
-        book_genres = [g.strip().lower() for g in r.display.get("categories", "").split(",") if g]
-
-        score = r.score
-        if any(g in book_genres for g in preferred_genres):
-            score += 0.2
-
-        boosted.append({
-            "book_id": r.book_id,
-            "title": r.display.get("title", ""),
-            "authors": r.display.get("authors", ""),
-            "genres": book_genres,
-            "score": score
-        })
-
-    return sorted(boosted, key=lambda x: x["score"], reverse=True)
-
 app = Flask(__name__)
+
+app.secret_key = "secret"
 
 @app.route("/", methods=["GET", "POST"])
 def home():
     results = []
+
     if request.method == "POST":
-        # query = request.form["query"]
-        # results = search(index, query, top_k=10)
-        # print([(r.book_id, r.display.get('title', ''), r.display.get('authors', ''), r.score) for r in results])
-
         query = request.form.get("query", "")
-        genres = request.form.getlist("genres") 
 
-        raw_results = search(index, query, top_k = 10)
-        # print(raw_results[0].display)
+        genres_input = request.form.get("genres", "")
+        if genres_input:
+            session["genres"] = genres_input
 
-        results = personalize(raw_results, genres)
+        preferred_genres = session.get("genres", "")
+        preferred_genres_list = [
+            g.strip().lower()
+            for g in preferred_genres.split(",")
+            if g
+        ]
 
-    return render_template("index.html", results=results)
+        raw_results = search(index, query, top_k= 10, preferred_genres=preferred_genres_list)
+        results = raw_results
+        # print(results)
+
+    return render_template(
+        "index.html",
+        results=results,
+        current_genres=session.get("genres", "")
+    )
+
 
 app.run(debug=True)
