@@ -1,35 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Book Search</title>
 
+  <style>
+    body {
+      background-color: #f5e6d3; 
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #5a3e2b;
+    }
+
+    .search-box {
+      background: #fffaf3;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #5a3e2b;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #d2b48c;
+    }
+
+    button {
+      background-color: #8b5e3c;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #6f4529;
+    }
+
+    .current-pref {
+      margin-top: 10px;
+      font-style: italic;
+      color: #5a3e2b;
+    }
+
+    .result-card {
+      background: white;
+      padding: 18px;
+      margin-bottom: 15px;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    }
+
+    .result-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #5a3e2b;
+    }
+
+    .result-meta {
+      margin-top: 5px;
+      color: #444;
+    }
+
+    .score {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #8b5e3c;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
 
 <h2>Context-Aware Book Search and Recommendation System</h2>
 
-<form method="POST">
-  <label for="genres">Preferred Genres:</label>
-  <input
-    type="text"
-    name="genres"
-    value="{{ current_genres }}"
-    placeholder="History, Drama, Fiction..."
-  >
+<div class="search-box">
+  <form method="POST">
+    <label>Preferred Genres:</label>
+    <input
+      type="text"
+      name="genres"
+      value="{{ current_genres }}"
+      placeholder="History, Drama, Fiction..."
+    >
 
-  <br><br>
+    <label>Preferred Authors:</label>
+    <input
+      type="text"
+      name="authors"
+      value="{{ current_authors }}"
+      placeholder="Dr. Seuss"
+    >
 
-  <label for="query">Search Books:</label>
-  <input name="query" placeholder="Search books">
+    <label>Search Books:</label>
+      <input 
+        type="text"
+        name="query"
+        value="{{ current_query }}"
+        placeholder="Search books"
+      >
+    <button type="submit">Search</button>
+  </form>
 
-  <button type="submit">Search</button>
-</form>
+  {% if current_genres %}
+  <div class="current-pref">
+    Current Preferred Genres: {{ current_genres }}
+  </div>
+  {% endif %}
 
-{% if current_genres %}
-<p><b>Current Preferred Genres:</b> {{ current_genres }}</p>
-{% endif %}
-
+  {% if current_authors %}
+  <div class="current-pref">
+    Current Preferred Authors: {{ current_authors }}
+  </div>
+  {% endif %}
+</div>
 
 {% for r in results %}
-  <p>
-    <b>{{ r.display.get('title', '') }}</b> (ID: {{ r.book_id }})<br>
-    Authors: {{ r.display.get('authors', '') }}<br>
-    Genres: {{ r.display.get('categories', '') }}<br>
-    Score: {{ "%.3f"|format(r.score) }}
-  </p>
-  <hr>
+  <div class="result-card">
+    <div class="result-title">
+      {{ r.display.get('title', '') }}
+    </div>
+
+    <div class="result-meta">
+      <strong>ID:</strong> {{ r.book_id }} <br>
+      <strong>Authors:</strong> {{ r.display.get('authors', '') }} <br>
+      <strong>Genres:</strong> {{ r.display.get('categories', '') }}
+    </div>
+
+    <div class="score">
+      Score: {{ "%.3f"|format(r.score) }}
+    </div>
+  </div>
 {% endfor %}
+
+</body>
+</html>

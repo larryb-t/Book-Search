@@ -30,11 +30,13 @@ app.secret_key = "secret"
 @app.route("/", methods=["GET", "POST"])
 def home():
     results = []
+    curr_query = ""
 
     if request.method == "POST":
-        query = request.form.get("query", "")
+        curr_query = request.form.get("query", "")
 
         genres_input = request.form.get("genres", "")
+
         if genres_input:
             session["genres"] = genres_input
 
@@ -45,14 +47,35 @@ def home():
             if g
         ]
 
-        raw_results = search(index, query, top_k= 10, preferred_genres=preferred_genres_list)
+        authors_input = request.form.get("authors", "")
+
+        if authors_input:
+            session["authors"] = authors_input
+
+        favorite_authors = session.get("authors", "")
+        preferred_authors_list = [
+            a.strip().lower()
+            for a in favorite_authors.split(",")
+            if a
+        ]
+
+        raw_results = search(
+            index,
+            curr_query,
+            top_k=10,
+            preferred_genres=preferred_genres_list,
+            preferred_authors=preferred_authors_list, 
+        )
+
         results = raw_results
         # print(results)
 
     return render_template(
         "index.html",
         results=results,
-        current_genres=session.get("genres", "")
+        current_genres=session.get("genres", ""),
+        current_authors=session.get("authors", ""),
+        current_query=curr_query
     )
 
 

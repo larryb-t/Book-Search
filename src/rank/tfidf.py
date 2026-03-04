@@ -31,7 +31,9 @@ def search(
     *,
     top_k: int = 10,
     preferred_genres: list[str] | None = None,
+    preferred_authors: list[str] | None = None,
     genre_boost: float = 0.2,
+    author_boost: float = 0.3,
 ) -> list[SearchResult]:
     tokens = tokenize(query)
     if not tokens:
@@ -53,6 +55,23 @@ def search(
 
                 if any(g in book_genres for g in preferred_genres):
                     scores[doc_id] += genre_boost
+
+    #author boosting
+    if preferred_authors:
+        preferred_authors = [a.strip().lower() for a in preferred_authors]
+
+        for doc_id in scores:
+            display = index.doc_display.get(doc_id, {})
+            authors = display.get("authors", "")
+
+            book_authors = [
+                a.strip().lower()
+                for a in authors.split(",")
+                if a.strip()
+            ]
+
+            if any(a in book_authors for a in preferred_authors):
+                scores[doc_id] += author_boost
 
     ranked = sorted(scores.items(), key=lambda item: item[1], reverse=True)[:top_k]
     results: list[SearchResult] = []
