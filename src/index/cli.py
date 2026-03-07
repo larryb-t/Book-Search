@@ -55,6 +55,7 @@ def main(argv: list[str] | None = None) -> int:
         title = result.display.get("title") or ""
         authors = result.display.get("authors") or ""
         print(f"{rank}. {title} | {authors} | score={result.score:.4f}")
+        print(f"   why: {result.why_matched}")
     return 0
 
 

@@ -1,3 +1,3 @@
-from .tfidf import SearchResult, search
+from .tfidf import SearchResult, apply_rerank, search
 
-__all__ = ["SearchResult", "search"]
+__all__ = ["SearchResult", "apply_rerank", "search"]
