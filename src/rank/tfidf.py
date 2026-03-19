@@ -92,7 +92,7 @@ def search(
                 why_matched=why_matched,
             )
         )
-    return results
+    return results 
 
 
 def apply_rerank(

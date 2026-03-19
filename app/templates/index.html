@@ -1,113 +1,78 @@
 <!DOCTYPE html>
 <html>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 <head>
   <title>Book Search</title>
-
-  <style>
-    body {
-      background-color: #f5e6d3; 
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 40px;
-    }
-
-    h2 {
-      text-align: center;
-      color: #5a3e2b;
-    }
-
-    .search-box {
-      background: #fffaf3;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-      margin-bottom: 30px;
-    }
-
-    label {
-      font-weight: bold;
-      color: #5a3e2b;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      border: 1px solid #d2b48c;
-    }
-
-    button {
-      background-color: #8b5e3c;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background-color: #6f4529;
-    }
-
-    .current-pref {
-      margin-top: 10px;
-      font-style: italic;
-      color: #5a3e2b;
-    }
-
-    .result-card {
-      background: white;
-      padding: 18px;
-      margin-bottom: 15px;
-      border-radius: 12px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-    }
-
-    .result-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #5a3e2b;
-    }
-
-    .result-meta {
-      margin-top: 5px;
-      color: #444;
-    }
-
-    .score {
-      margin-top: 8px;
-      font-size: 13px;
-      color: #8b5e3c;
-      font-weight: bold;
-    }
-  </style>
 </head>
 
 <body>
+  <h2>Context-Aware Book Search and Recommendation System</h2>
 
-<h2>Context-Aware Book Search and Recommendation System</h2>
+<div class="top-bar">
+  <a href="/profile" class="profile-btn">Profile</a>
+</div>
+
 
 <div class="search-box">
   <form method="POST">
-    <label>Preferred Genres:</label>
-    <input
-      type="text"
-      name="genres"
-      value="{{ current_genres }}"
-      placeholder="History, Drama, Fiction..."
-    >
 
-    <label>Preferred Authors:</label>
-    <input
-      type="text"
-      name="authors"
-      value="{{ current_authors }}"
-      placeholder="Dr. Seuss"
-    >
+      <label>Mood:</label>
+      <input
+        type="text"
+        name="moods"
+        value="{{ current_moods }}"
+        placeholder="Relaxing, Fun, Learning..."
+      >
+
+      <label>Available Time:</label>
+      <select name="time">
+        <option value="">Any</option>
+        <option value="short" {% if current_time == "short" %}selected{% endif %}>Short read</option>
+        <option value="medium" {% if current_time == "medium" %}selected{% endif %}>Medium</option>
+        <option value="long" {% if current_time == "long" %}selected{% endif %}>Long read</option>
+      </select>
+    </form>
+
+</div>
+<div class ="search-box">
+    {% if recommended %}
+    <h3>Recommended For You</h3>
+
+    <div class="recommended-container">
+      {% for r in recommended %}
+        <div class="rec-card">
+
+          <b>{{ r.display.get('title', '') }}</b> ({{r.display.get('published_year')}})<br>
+          By: {{ r.display.get('authors', '') }}<br>
+
+          
+          <div class = "button-row">
+            <button type="button" class="view-btn" onclick="toggleDetails('rec-desc-{{ r.book_id }}')">View</button>
+
+            <form method="POST" action="/bookmark">
+            <input type="hidden" name="book_id" value="{{ r.book_id }}">
+            <input type="hidden" name="title" value="{{ r.display.get('title', '') }}">
+            <input type="hidden" name="authors" value="{{ r.display.get('authors', '') }}">
+            <input type="hidden" name="categories" value="{{ r.display.get('categories', '') }}">
+            <button type="submit">Bookmark</button>
+          </form>
+
+
+          </div>
+          <div id="rec-desc-{{ r.book_id }}" class="details-content scrollable" style="display:none;">
+          <p><b>ID: </b>{{ r.book_id }} </p>
+          <p><b>Description:</b> {{ r.display.get('description', 'No description available') }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    {% else %} 
+    <p>No Recommendations yet</p>
+    {% endif %}
+  </div>
+
+<div class="search-box">
+  <form method="POST">
 
     <label>Search Books:</label>
       <input 
@@ -119,36 +84,47 @@
     <button type="submit">Search</button>
   </form>
 
-  {% if current_genres %}
-  <div class="current-pref">
-    Current Preferred Genres: {{ current_genres }}
-  </div>
-  {% endif %}
-
-  {% if current_authors %}
-  <div class="current-pref">
-    Current Preferred Authors: {{ current_authors }}
-  </div>
-  {% endif %}
 </div>
 
 {% for r in results %}
-  <div class="result-card">
-    <div class="result-title">
-      {{ r.display.get('title', '') }}
+  <div class="book-card">
+
+    <b>{{ r.display.get('title', '') }}</b> ({{r.display.get('published_year')}})<br>
+    By: {{ r.display.get('authors', '') }}<br>
+    Pages: {{ r.display.get('num_pages', '') }}<br>
+
+    {{ r.display.get('average_rating') }} / 5<br>
+
+    <div class="button-row">
+
+      <button type="button" class="view-btn" onclick="toggleDetails('search-desc-{{ r.book_id }}')">View</button>
+
+      
+      <form method="POST" action="/bookmark">
+        <input type="hidden" name="book_id" value="{{ r.book_id }}">
+        <input type="hidden" name="title" value="{{ r.display.get('title', '') }}">
+        <input type="hidden" name="authors" value="{{ r.display.get('authors', '') }}">
+        <input type="hidden" name="categories" value="{{ r.display.get('categories', '') }}">
+        
+        <button type="submit">Bookmark</button>
+        
+      </form>
     </div>
 
-    <div class="result-meta">
-      <strong>ID:</strong> {{ r.book_id }} <br>
-      <strong>Authors:</strong> {{ r.display.get('authors', '') }} <br>
-      <strong>Genres:</strong> {{ r.display.get('categories', '') }}
+    <div id="search-desc-{{ r.book_id }}" class="details-content" style="display:none;">
+    <p><b>ID: </b>{{ r.book_id }} </p>
+    <p><b>Description:</b> {{ r.display.get('description', 'No description available') }}</p>
+    {% if r.display.get('categories') %}<p><b>Genres:</b> {{ r.display.get('categories') }}</p>{% endif %}
+
+    <p><b>Ranking Score:</b> {{ "%.3f"|format(r.score) }}</p>
+    {% if r.why_matched %}
+      <p><b>Why Matched:</b> {{ r.why_matched }}</p>
+    {% endif %} 
     </div>
 
-    <div class="score">
-      Score: {{ "%.3f"|format(r.score) }}
-    </div>
   </div>
 {% endfor %}
 
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,157 @@
+
+input {
+  padding: 8px;
+  width: 300px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+button {
+  background: #a67c52;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+}
+
+body {
+    background-color: #f5e6d3; 
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 40px;
+}
+
+h2 {
+    text-align: center;
+    color: #5a3e2b;
+}
+
+.search-box {
+    background: #fffaf3;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+label {
+    font-weight: bold;
+    color: #5a3e2b;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #d2b48c;
+}
+
+
+button:hover {
+    background-color: #6f4529;
+}
+
+.current-pref {
+    margin-top: 10px;
+    font-style: italic;
+    color: #5a3e2b;
+}
+
+.book-card {
+    background: #fffaf3;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.view-btn {
+  background: #a67c52;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+details summary {
+    list-style: none;
+}
+
+details summary::-webkit-details-marker {
+    display: none;
+}
+
+.score {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #8b5e3c;
+    font-weight: bold;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: center;
+    padding: 10px 20px;
+}
+
+.profile-btn {
+    background: #a67c52;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.profile-btn:hover {
+    background: #8c6239;
+}
+
+.recommended-container {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.rec-card {
+ width: 300x; 
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: inline-block; /* horizontal layout */
+  vertical-align: top;
+  margin-right: 10px;
+}
+
+.details-content.scrollable {
+  margin-top: 5px;
+  padding: 5px;
+  background: #f9f3ef;
+  border-radius: 6px;
+  max-height: 150px;      /* limit height */
+  overflow-y: auto;       /* vertical scroll if too tall */
+  overflow-x: hidden;     /* prevent horizontal scroll */
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.details-content {
+  margin-top: 5px;
+  padding: 5px 0;
+  background: #f9f3ef;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.view-container {
+  display: inline-block;   
+}

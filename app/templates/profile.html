@@ -1,0 +1,46 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+<h2>User Profile</h2>
+
+<div class="top-bar">
+  <a href="/" class="profile-btn">Back</a>
+</div>
+
+<form method="POST">
+
+  <label>Preferred Genres:</label><br>
+  <input type="text" name="genres"
+         value="{{ current_genres }}"
+         placeholder="History, Fiction...">
+
+  <br><br>
+
+  <label>Favorite Authors:</label><br>
+  <input type="text" name="authors"
+         value="{{ current_authors }}"
+         placeholder="J.K. Rowling, George Orwell...">
+
+  <br><br>
+
+  <button type="submit">Save Preferences</button>
+</form>
+
+<br>
+
+<h3>Bookmarked Books</h3>
+
+{% if bookmarks %}
+  {% for b in bookmarks %}
+    <div class="book-card">
+      <b>{{ b.title }}</b><br>
+      Authors: {{ b.authors }}<br>
+      Genres: {{ b.categories }}
+      <form method="POST" action="/remove_bookmark">
+      <input type="hidden" name="book_id" value="{{ b.book_id }}">
+      <button>Remove</button>
+      </form>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>No bookmarks yet.</p>
+{% endif %}
