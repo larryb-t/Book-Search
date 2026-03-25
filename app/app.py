@@ -4,6 +4,7 @@ from src.ingest import find_pg_catalog, load_pg_catalog
 from src.ingest.kaggle_books import find_books_csv, load_books_csv
 from src.rank import search
 from flask import session
+import os
 
 
 dataset_root = '.'
@@ -25,7 +26,7 @@ index = InvertedIndex.build(records)
 
 app = Flask(__name__)
 
-app.secret_key = "secret"
+app.secret_key = os.environ.get("SECRET_KEY")
 
 def get_recommendations(index, bookmarks, k=10):
     if not bookmarks:
